@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ρυθμίσεις Προφίλ</title>
+  <link rel="stylesheet" href="css/theme.css" />
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="/dashboard.html">Medical App</a>
+      <div class="d-flex gap-2">
+        <a href="/dashboard.html" class="btn btn-outline-secondary btn-sm">Πίσω στην Αρχική Σελίδα</a>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Αποσύνδεση</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Στοιχεία Λογαριασμού</h5>
+            <form id="profileForm" class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">AMKA</label>
+                <input id="pfAmka" class="form-control" disabled />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input id="pfEmail" type="email" class="form-control" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Όνομα</label>
+                <input id="pfFirst" class="form-control to-upper" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Επώνυμο</label>
+                <input id="pfLast" class="form-control to-upper" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ειδικότητα</label>
+                <select id="pfSpecialty" class="form-select" required>
+                  <option value="">- Επιλέξτε ειδικότητα -</option>
+                  <option>Γενική Ιατρική</option>
+                  <option>Παθολογία</option>
+                  <option>Καρδιολογία</option>
+                  <option>Παιδιατρική</option>
+                  <option>Γενική Χειρουργική</option>
+                  <option>Ορθοπαιδική</option>
+                  <option>Γυναικολογία - Μαιευτική</option>
+                  <option>Ωτορινολαρυγγολογία (ΩΡΛ)</option>
+                  <option>Οφθαλμολογία</option>
+                  <option>Δερματολογία - Αφροδισιολογία</option>
+                  <option>Νευρολογία</option>
+                  <option>Νευροχειρουργική</option>
+                  <option>Πνευμονολογία - Φυματιολογία</option>
+                  <option>Ενδοκρινολογία - Διαβήτης</option>
+                  <option>Νεφρολογία</option>
+                  <option>Γαστρεντερολογία</option>
+                  <option>Ρευματολογία</option>
+                  <option>Αιματολογία</option>
+                  <option>Ουρολογία</option>
+                  <option>Πλαστική Χειρουργική</option>
+                  <option>Αγγειοχειρουργική</option>
+                  <option>Αναισθησιολογία</option>
+                  <option>Ακτινολογία</option>
+                  <option>Ιατρική Βιοπαθολογία (Μικροβιολογία)</option>
+                  <option>Φυσική Ιατρική και Αποκατάσταση</option>
+                  <option>Ψυχιατρική</option>
+                  <option>Πυρηνική Ιατρική</option>
+                  <option>Αλλεργιολογία</option>
+                  <option>Ιατροδικαστική</option>
+                  <option>Παθολογική Ογκολογία</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Αρ. Άδειας</label>
+                <input id="pfLicense" class="form-control to-upper" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ιατρικός Σύλλογος</label>
+                <input id="pfAssociation" class="form-control to-upper" required />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Τηλέφωνο</label>
+                <input id="pfPhone" class="form-control" required inputmode="numeric" pattern="\d{10}" maxlength="10" title="Ακριβώς 10 ψηφία" />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Οδός/Αριθμός (Ιατρείο)</label>
+                <input id="pfStreet" class="form-control to-upper" required />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Πόλη</label>
+                <input id="pfCity" class="form-control to-upper" required />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">ΤΚ</label>
+                <input id="pfPostal" class="form-control" required inputmode="numeric" pattern="\d{5}" maxlength="5" title="Ακριβώς 5 ψηφία" />
+              </div>
+              <div class="col-12">
+                <button class="btn btn-primary" type="submit">Αποθήκευση</button>
+                <span id="profileMsg" class="ms-2 text-danger"></span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Αλλαγή Κωδικού</h5>
+            <form id="passwordForm" class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Τρέχων Κωδικός</label>
+                <input id="curPwd" type="password" class="form-control" required />
+              </div>
+              <div class="col-12">
+                <label class="form-label">Νέος Κωδικός</label>
+                <input id="newPwd" type="password" class="form-control" required />
+                <div id="newPwdHelp" class="form-text" style="color:#d00; min-height:1em;"></div>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Επιβεβαίωση Νέου Κωδικού</label>
+                <input id="confPwd" type="password" class="form-control" required />
+                <div id="confPwdHelp" class="form-text" style="color:#d00; min-height:1em;"></div>
+              </div>
+              <div class="col-12">
+                <button class="btn btn-warning" type="submit">Αλλαγή Κωδικού</button>
+                <span id="pwdMsg" class="ms-2 text-danger"></span>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/uppercase.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

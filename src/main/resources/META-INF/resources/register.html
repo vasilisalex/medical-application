@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Εγγραφή Γιατρού</title>
+  <link rel="stylesheet" href="css/theme.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 680px;
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+    .card label { display:block; margin:.35rem 0 .25rem; font-weight:600; }
+    .card input { width:100%; padding:.5rem; border:1px solid #ccc; border-radius:4px; }
+    .card button {
+      width: 100%;
+      padding: 0.7rem;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .card button:hover {
+      background: #0056b3;
+    }
+    #message {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #d00;
+    }
+    .form-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px 16px; }
+    .span-2 { grid-column: span 2; }
+    @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } .span-2 { grid-column: span 1; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Εγγραφή Γιατρού</h2>
+    <form id="register-form">
+      <div class="form-grid">
+        <div class="span-2">
+          <label for="amka">AMKA</label>
+          <input type="text" id="amka" name="amka" required inputmode="numeric" pattern="\d{11}" maxlength="11" title="Επιτρέπονται μόνο αριθμητικοί χαρακτήρες (ακριβώς 11 ψηφία)" />
+          <div id="amkaHelp" style="color:#d00; font-size:0.85rem; min-height:1em;"></div>
+        </div>
+        <div>
+          <label for="firstName">Όνομα</label>
+          <input type="text" id="firstName" name="firstName" class="to-upper" required />
+        </div>
+        <div>
+          <label for="lastName">Επώνυμο</label>
+          <input type="text" id="lastName" name="lastName" class="to-upper" required />
+        </div>
+        <div class="span-2">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div>
+          <label for="password">Κωδικός</label>
+          <input type="password" id="password" name="password" required />
+          <div id="passwordHelp" style="color:#d00; font-size:0.85rem; min-height:1em;"></div>
+        </div>
+        <div>
+          <label for="confirmPassword">Επιβεβαίωση Κωδικού</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" required />
+          <div id="confirmPasswordHelp" style="color:#d00; font-size:0.85rem; min-height:1em;"></div>
+        </div>
+        <div>
+          <label for="specialty">Ειδικότητα</label>
+          <select id="specialty" name="specialty" required>
+            <option value="">- Επιλέξτε ειδικότητα -</option>
+            <option>Γενική Ιατρική</option>
+            <option>Παθολογία</option>
+            <option>Καρδιολογία</option>
+            <option>Παιδιατρική</option>
+            <option>Γενική Χειρουργική</option>
+            <option>Ορθοπαιδική</option>
+            <option>Γυναικολογία - Μαιευτική</option>
+            <option>Ωτορινολαρυγγολογία (ΩΡΛ)</option>
+            <option>Οφθαλμολογία</option>
+            <option>Δερματολογία - Αφροδισιολογία</option>
+            <option>Νευρολογία</option>
+            <option>Νευροχειρουργική</option>
+            <option>Πνευμονολογία - Φυματιολογία</option>
+            <option>Ενδοκρινολογία - Διαβήτης</option>
+            <option>Νεφρολογία</option>
+            <option>Γαστρεντερολογία</option>
+            <option>Ρευματολογία</option>
+            <option>Αιματολογία</option>
+            <option>Ουρολογία</option>
+            <option>Πλαστική Χειρουργική</option>
+            <option>Αγγειοχειρουργική</option>
+            <option>Αναισθησιολογία</option>
+            <option>Ακτινολογία</option>
+            <option>Ιατρική Βιοπαθολογία (Μικροβιολογία)</option>
+            <option>Φυσική Ιατρική και Αποκατάσταση</option>
+            <option>Ψυχιατρική</option>
+            <option>Πυρηνική Ιατρική</option>
+            <option>Αλλεργιολογία</option>
+            <option>Ιατροδικαστική</option>
+            <option>Παθολογική Ογκολογία</option>
+          </select>
+        </div>
+        <div>
+          <label for="licenseNumber">Αρ. Άδειας</label>
+          <input type="text" id="licenseNumber" name="licenseNumber" class="to-upper" required />
+        </div>
+        <div>
+          <label for="medicalAssociation">Ιατρικός Σύλλογος</label>
+          <input type="text" id="medicalAssociation" name="medicalAssociation" class="to-upper" required />
+        </div>
+        <div>
+          <label for="phone">Τηλέφωνο</label>
+          <input type="text" id="phone" name="phone" required inputmode="numeric" pattern="\d{10}" maxlength="10" title="Ακριβώς 10 ψηφία" />
+        </div>
+        <div class="span-2">
+          <label for="officeStreet">Οδός/Αριθμός (Ιατρείο)</label>
+          <input type="text" id="officeStreet" name="officeStreet" class="to-upper" required />
+        </div>
+        <div>
+          <label for="officeCity">Πόλη</label>
+          <input type="text" id="officeCity" name="officeCity" class="to-upper" required />
+        </div>
+        <div>
+          <label for="officePostalCode">ΤΚ</label>
+          <input type="text" id="officePostalCode" name="officePostalCode" required inputmode="numeric" pattern="\d{5}" maxlength="5" title="Ακριβώς 5 ψηφία" />
+        </div>
+        <div class="span-2">
+          <button type="submit">Εγγραφή</button>
+        </div>
+      </div>
+    </form>
+    <div id="message"></div>
+    <div style="margin-top:0.75rem; font-size:0.9rem; text-align:center;">
+      <a href="/" style="text-decoration:none;">⟵ Επιστροφή στη Σύνδεση</a>
+    </div>
+  </div>
+
+  <script src="js/uppercase.js"></script>
+  <script src="js/register.js"></script>  
+</body>
+</html>
