@@ -11,10 +11,10 @@ class DoctorResourceTest {
     @Test
     void testHelloEndpoint() {
         given()
-          .when().get("/doctors")
+        .when().get("/doctors/hello")
           .then()
              .statusCode(200)
-             .body(is("Hello from Quarkus REST"));
+             .body(is("ok"));
     }
 
 }

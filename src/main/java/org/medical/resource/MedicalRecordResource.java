@@ -28,7 +28,7 @@ public class MedicalRecordResource {
     @POST
     @Transactional
     @RolesAllowed("doctor")
-    public Response createRecord(CreateMedicalRecordDTO dto) {
+    public Response createRecord(@jakarta.validation.Valid CreateMedicalRecordDTO dto) {
         String doctorAmka = identity.getPrincipal().getName();
 
         Doctor doctor = Doctor.find("amka", doctorAmka).firstResult();
@@ -46,8 +46,18 @@ public class MedicalRecordResource {
         record.sickness = dto.sickness;
         record.medication = dto.medication;
         record.exams = dto.exams;
+        record.visitType = dto.visitType;
+        record.facility = dto.facility;
+        record.doctorSpecialty = dto.doctorSpecialty;
+        record.symptoms = dto.symptoms;
+        record.diagnosisCode = dto.diagnosisCode;
+        record.dosage = dto.dosage;
+        record.followUpDate = dto.followUpDate;
+        record.notes = dto.notes;
         record.doctor = doctor;
         record.patient = patient;
+        record.createdAt = java.time.LocalDateTime.now();
+        record.updatedAt = record.createdAt;
         record.persist();
 
         return Response.status(Response.Status.CREATED).entity(record).build();
@@ -72,6 +82,21 @@ public class MedicalRecordResource {
     }
 
     /**
+     * GET /medicalrecords/{id}
+     * Επιστρέφει μία εγγραφή ιστορικού βάσει id.
+     */
+    @GET
+    @Path("/{id}")
+    @RolesAllowed("doctor")
+    public Response getRecordById(@PathParam("id") Long id) {
+        MedicalRecord record = MedicalRecord.findById(id);
+        if (record == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Record not found").build();
+        }
+        return Response.ok(record).build();
+    }
+
+    /**
      * PUT /medicalrecords/{id}
      * Ενημέρωση υπάρχουσας εγγραφής.
      */
@@ -79,7 +104,7 @@ public class MedicalRecordResource {
     @Path("/{id}")
     @Transactional
     @RolesAllowed("doctor")
-    public Response updateRecord(@PathParam("id") Long id, CreateMedicalRecordDTO dto) {
+    public Response updateRecord(@PathParam("id") Long id, @jakarta.validation.Valid CreateMedicalRecordDTO dto) {
         MedicalRecord record = MedicalRecord.findById(id);
         if (record == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Record not found").build();
@@ -94,8 +119,17 @@ public class MedicalRecordResource {
         record.sickness = dto.sickness;
         record.medication = dto.medication;
         record.exams = dto.exams;
+        record.visitType = dto.visitType;
+        record.facility = dto.facility;
+        record.doctorSpecialty = dto.doctorSpecialty;
+        record.symptoms = dto.symptoms;
+        record.diagnosisCode = dto.diagnosisCode;
+        record.dosage = dto.dosage;
+        record.followUpDate = dto.followUpDate;
+        record.notes = dto.notes;
         record.patient = patient;
 
+        record.updatedAt = java.time.LocalDateTime.now();
         return Response.ok(record).build();
     }
 
@@ -108,13 +142,20 @@ public class MedicalRecordResource {
     @Transactional
     @RolesAllowed("doctor")
     public Response deleteRecord(@PathParam("id") Long id) {
-        boolean deleted = MedicalRecord.deleteById(id);
-
-        if (deleted) {
-            return Response.noContent().build();
-        } else {
+        MedicalRecord rec = MedicalRecord.findById(id);
+        if (rec == null) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity("Medical record not found").build();
         }
+        String doctorAmka = identity.getPrincipal().getName();
+        String creatorAmka = rec.doctor != null ? rec.doctor.amka : null;
+        if (creatorAmka == null || !creatorAmka.equals(doctorAmka)) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity("Only the creating doctor can delete this record").build();
+        }
+        boolean deleted = MedicalRecord.deleteById(id);
+        return deleted ? Response.noContent().build()
+                : Response.status(Response.Status.NOT_FOUND)
+                    .entity("Medical record not found").build();
     }
 }
