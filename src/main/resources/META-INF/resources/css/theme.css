@@ -1,0 +1,156 @@
+/* Minimal theme */
+:root{
+  --primary:#0b3c7a;--primary-dark:#072c5a;--accent:#2b8bd6;
+  --bg:#f6f8fb;--surface:#ffffff;--text:#1f2a37;--muted:#6c757d;
+  --border:#d9dee3;--success:#198754;--danger:#dc3545;--warning:#ffc107;
+  --radius:8px;--shadow:0 2px 8px rgba(16,24,40,.06);
+  --gutter:12px;
+  /* Unified button sizing */
+  --btn-font-size:.95rem;--btn-padding-y:10px;--btn-padding-x:14px;--btn-min-height:40px;--btn-radius:6px;
+}
+/* Global box-sizing to keep elements inside containers */
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:400 15px/1.6 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility}
+
+/* Layout */
+.container{width:100%;max-width:1200px;margin:0 auto;padding:0 20px}
+.row{display:flex;flex-wrap:wrap;margin-left:calc(-1 * var(--gutter));margin-right:calc(-1 * var(--gutter))}
+[class^="col-"],[class*=" col-"]{padding:0 var(--gutter);box-sizing:border-box}
+.col-12{flex:0 0 100%;max-width:100%}
+.col-auto{flex:0 0 auto}
+/* Simple responsive grid */
+.col-md-3{flex:0 0 25%;max-width:25%}
+.col-md-4{flex:0 0 33.3333%;max-width:33.3333%}
+.col-md-5{flex:0 0 41.6667%;max-width:41.6667%}
+.col-md-6{flex:0 0 50%;max-width:50%}
+.col-md-7{flex:0 0 58.3333%;max-width:58.3333%}
+.col-md-8{flex:0 0 66.6667%;max-width:66.6667%}
+.col-md-9{flex:0 0 75%;max-width:75%}
+.col-md-12{flex:0 0 100%;max-width:100%}
+@media(max-width:768px){
+  .col-md-3,.col-md-4,.col-md-5,.col-md-6,.col-md-7,.col-md-8,.col-md-9,.col-md-12{flex:0 0 100%;max-width:100%}
+}
+
+/* Navbar */
+.navbar{background:#fff;border-bottom:1px solid var(--border)}
+.navbar .container{display:flex;align-items:center;justify-content:space-between;min-height:58px}
+.navbar .navbar-brand{font-weight:700;color:var(--primary);text-decoration:none;font-size:18px}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card .card-body{padding:20px}
+.card .card-title{margin:0 0 12px;font-weight:700;border-bottom:1px solid var(--border);padding-bottom:6px;font-size:1.25rem}
+/* Quick action cards (dashboard) */
+.quick-card .card-title{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.card-headline{margin-bottom:8px}
+.quick-card p{margin:4px 0 0}
+
+/* Buttons (unified size and font) */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;cursor:pointer;border:1px solid transparent;border-radius:var(--btn-radius);padding:var(--btn-padding-y) var(--btn-padding-x);min-height:var(--btn-min-height);font-size:var(--btn-font-size);font-weight:600;text-align:center;text-decoration:none;transition:all .15s ease}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+/* Make btn-sm visually identical for consistency */
+.btn-sm{padding:var(--btn-padding-y) var(--btn-padding-x);font-size:var(--btn-font-size);min-height:var(--btn-min-height)}
+/* Button size matching input-lg */
+.btn-lg{font-size:1.05rem;min-height:44px}
+.btn-primary{background:var(--primary);border-color:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-dark);border-color:var(--primary-dark)}
+.btn-success{background:var(--success);border-color:var(--success);color:#fff}
+.btn-success:hover{filter:brightness(.95)}
+.btn-outline-secondary{background:#fff;border-color:var(--primary);color:var(--primary)}
+.btn-outline-secondary:hover{background:#eef4ff}
+.btn-outline-danger{background:#fff;border-color:var(--danger);color:var(--danger)}
+.btn-outline-danger:hover{background:#fff1f1}
+.btn-outline-primary{background:#fff;border-color:var(--primary);color:var(--primary)}
+.btn-outline-primary:hover{background:#eef4ff}
+
+/* Forms */
+.form-label{display:block;margin-bottom:6px;font-weight:600;color:#344054;font-size:.95rem}
+.form-control,.form-select{width:100%;max-width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text)}
+.card form .form-control,.card form .form-select{max-width:100%}
+.card form .btn{margin-top:.5rem}
+.form-control:focus,.form-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 .2rem rgba(43,139,214,.15)}
+.form-text{font-size:.85rem;color:#d00}
+/* Readonly/view-only visuals */
+.form-control[disabled], .form-select[disabled], textarea[disabled]{
+  background:#f7f9fb !important; color:#6b7280 !important; opacity:1;
+}
+.kv-field .kv-value.readonly{ background:#f7f9fb; color:#344054; }
+/* Light view style for read-only grids */
+.kv-read .kv-value{ background:#f7f9fb; color:#344054; }
+
+/* Simple section divider (thin line + spacing) */
+.section-divider{ border-top:1px solid var(--border); padding-top:8px; margin-top:8px }
+/* Larger input helper for prominent search */
+.input-lg{font-size:1.05rem;min-height:44px}
+
+/* Form look-alike to kv grid */
+.form-kv .form-label{font-size:.85rem;color:#475467;margin-bottom:4px}
+.form-kv .form-control,.form-kv .form-select{font-size:.95rem;min-height:40px}
+.form-kv .section-title{font-size:.9rem;color:#475467;font-weight:700;margin:8px 0 2px;border-top:1px solid var(--border);padding-top:8px}
+/* Uppercase helper */
+.to-upper{ text-transform: uppercase; }
+
+/* Tables */
+.table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;table-layout:fixed}
+.table th,.table td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top}
+.table td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.table thead th{background:#eef2f6;font-weight:700;text-align:left}
+.table tbody tr:nth-child(even){background:#f8f9fb}
+.table tbody tr:hover{background:#eef6ff}
+.table-sm th,.table-sm td{padding:8px}
+
+/* Utilities */
+.d-flex{display:flex}
+.justify-content-between{justify-content:space-between}
+.justify-content-center{justify-content:center}
+.align-items-center{align-items:center}
+.align-items-stretch{align-items:stretch}
+.gap-2{gap:.5rem}
+.g-4{row-gap:1.5rem}
+.g-3{row-gap:1rem}
+.mb-0{margin-bottom:0}
+.mb-3{margin-bottom:1rem}
+.mb-4{margin-bottom:1.5rem}
+.mt-2{margin-top:.5rem}
+.mt-3{margin-top:1rem}
+.mt-0{margin-top:0!important}
+.mt-4{margin-top:1.5rem}
+.pt-3{padding-top:1rem}
+.ms-2{margin-left:.5rem}
+.w-100{width:100%}
+.h-100{height:100%}
+.vh-100{min-height:100vh}
+.d-none{display:none !important}
+.text-muted{color:var(--muted)}
+.text-center{text-align:center}
+.bg-light{background:var(--bg)!important}
+.bg-white{background:#fff!important}
+.shadow-sm{box-shadow:0 .125rem .25rem rgba(0,0,0,.075)!important}
+.shadow{box-shadow:0 .25rem .75rem rgba(16,24,40,.08)!important}
+.p-4{padding:1.25rem}
+.border-start{border-left:1px solid var(--border)}
+.visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.border-top{border-top:1px solid var(--border)}
+.fs-5{font-size:1.125rem}
+
+/* Links */
+a:not(.btn){color:var(--accent);text-decoration:none}
+a:not(.btn):hover{text-decoration:underline}
+
+/* Clickable rows helper */
+.clickable{cursor:pointer}
+
+/* Patient page tweaks */
+#patientCard .row > div{margin-bottom:8px}
+#patientCard .row > div strong{color:#344054}
+/* Key-Value grid (view mode) */
+.kv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 16px}
+.kv-grid .span-2{grid-column:span 2}
+.kv-field .kv-label{font-size:.85rem;color:#475467;font-weight:600;margin-bottom:4px}
+.kv-field .kv-value{border:1px solid var(--border);border-radius:6px;background:#fff;padding:10px 12px;min-height:40px;display:flex;align-items:center}
+@media(max-width:900px){.kv-grid{grid-template-columns:repeat(2,1fr)}.kv-grid .span-2{grid-column:span 2}}
+@media(max-width:600px){.kv-grid{grid-template-columns:1fr}}
+/* toolbar bottom-right in patient card */
+.patient-toolbar{display:flex;justify-content:flex-end;align-items:center;gap:8px}
+@media(max-width:900px){#patientCard .details-grid{grid-template-columns:repeat(2,1fr)}#patientCard .details-grid .span-2{grid-column:span 2}}

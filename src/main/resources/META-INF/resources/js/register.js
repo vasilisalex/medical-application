@@ -91,7 +91,7 @@ pwInput.addEventListener('blur', () => updatePasswordValidity(true));
 pwcInput.addEventListener('input', () => updateConfirmValidity(false));
 pwcInput.addEventListener('blur', () => updateConfirmValidity(true));
 
-// Ζωντανός έλεγχος ΤΚ: μόνο ψηφία και μέγιστο 5
+// live έλεγχος ΤΚ: μόνο ψηφία και μέγιστο 5
 if (officePostalInput) {
   officePostalInput.addEventListener('input', () => {
     let v = officePostalInput.value.replace(/\D/g, '');

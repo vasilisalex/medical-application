@@ -1,45 +1,32 @@
-#Maven
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-release.properties
-.flattened-pom.xml
+# Build artifacts
+/target/
+*.class
 
-# Eclipse
-.project
-.classpath
-.settings/
-bin/
+# Quarkus
+/.quarkus/
+/.quarkus.pid
+/quarkus.log
 
-# IntelliJ
-.idea
-*.ipr
-*.iml
-*.iws
-
-# NetBeans
-nb-configuration.xml
-
-# Visual Studio Code
-.vscode
-.factorypath
-
-# OSX
+# OS / IDE
 .DS_Store
+.idea/
+.vscode/
+*.iml
 
-# Vim
-*.swp
-*.swo
+# Logs / misc
+*.log
 
-# patch
-*.orig
-*.rej
+# Node / frontend (if present)
+node_modules/
+dist/
 
-# Local environment
+# Env files
 .env
+.env.*
 
-# Plugin directory
-/.quarkus/cli/plugins/
-# TLS Certificates
-.certs/
+# Secrets (do not commit signing keys)
+src/main/resources/META-INF/privateKey.pem
+src/main/resources/privateKey.pem
+
+# Optional tools
+postman/

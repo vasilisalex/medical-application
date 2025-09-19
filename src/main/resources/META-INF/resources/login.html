@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="bg-light">
+
+  <!-- Container for form -->
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
+      <h3 class="text-center mb-4">Medical App Login</h3>
+
+      <form id="loginForm">
+        <div class="mb-3">
+          <label for="amka" class="form-label">AMKA</label>
+          <input type="text" class="form-control" id="amka" required inputmode="numeric" pattern="\d{11}" maxlength="11" title="Ακριβώς 11 ψηφία" />
+          <div id="loginAmkaHelp" class="form-text text-danger" style="min-height:1em"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Κωδικός</label>
+          <input type="password" class="form-control" id="password" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Σύνδεση</button>
+      </form>
+
+      <div id="loginMessage" class="text-danger mt-3 text-center" style="display: none;">
+        Λάθος AMKA ή κωδικός!
+      </div>
+    </div>
+  </div>
+
+  <!-- Login JS -->
+  <script src="js/login.js"></script>
+</body>
+</html>

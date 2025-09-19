@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Επεξεργασία Ασθενή</title>
+  <link rel="stylesheet" href="css/theme.css" />
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="/dashboard.html">Medical App</a>
+      <div class="d-flex gap-2">
+        <a id="backToPatient" class="btn btn-outline-secondary btn-sm" href="#">Πίσω στον ασθενή</a>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Αποσύνδεση</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Επεξεργασία Στοιχείων Ασθενή</h5>
+        <form id="editForm" class="row g-3 form-kv">
+          <div class="col-md-3">
+            <label class="form-label">AMKA</label>
+            <input id="amka" class="form-control" disabled />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Όνομα</label>
+            <input id="first" class="form-control to-upper" required />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Επώνυμο</label>
+            <input id="last" class="form-control to-upper" required />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Ημ/νία Γέννησης</label>
+            <input id="dob" type="date" class="form-control" required />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">ΑΦΜ</label>
+            <input id="afm" class="form-control" maxlength="9" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Αρ. Ταυτότητας</label>
+            <input id="idNumber" class="form-control to-upper" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Είδος Ασφάλειας</label>
+            <select id="insuranceType" class="form-select">
+              <option value="">-</option>
+              <option value="public">Δημόσια</option>
+              <option value="private">Ιδιωτική</option>
+            </select>
+          </div>
+
+          <div class="col-12 mt-3">
+            <div class="section-title">Διεύθυνση Κατοικίας</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Οδός/Αριθμός</label>
+            <input id="street" class="form-control to-upper" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Πόλη</label>
+            <input id="city" class="form-control to-upper" />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">ΤΚ</label>
+            <input id="postal" class="form-control" maxlength="5" inputmode="numeric" pattern="\d{5}" title="Ακριβώς 5 ψηφία" />
+          </div>
+
+          <div class="col-12 mt-3">
+            <div class="section-title">Επικοινωνία</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Τηλέφωνο</label>
+            <input id="phone" class="form-control" inputmode="numeric" maxlength="10" pattern="\d{10}" title="Ακριβώς 10 ψηφία" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input id="email" type="email" class="form-control" required />
+          </div>
+
+          <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+              <button class="btn btn-primary" type="submit">Αποθήκευση</button>
+              <span id="msg" class="ms-2 text-danger"></span>
+            </div>
+            <button id="deleteBtn" type="button" class="btn btn-outline-danger">Διαγραφή Ασθενή</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/uppercase.js"></script>
+  <script>
+    const token = localStorage.getItem('jwt');
+    if (!token) window.location.href = '/login.html';
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('jwt');
+      window.location.href = '/';
+    });
+
+    const params = new URLSearchParams(location.search);
+    const amka = params.get('amka');
+    const backBtn = document.getElementById('backToPatient');
+    backBtn.href = `/patient.html?amka=${encodeURIComponent(amka)}`;
+
+    const form = document.getElementById('editForm');
+    const msg = document.getElementById('msg');
+
+    const f = {
+      amka: document.getElementById('amka'),
+      first: document.getElementById('first'),
+      last: document.getElementById('last'),
+      dob: document.getElementById('dob'),
+      phone: document.getElementById('phone'),
+      email: document.getElementById('email'),
+      afm: document.getElementById('afm'),
+      idNumber: document.getElementById('idNumber'),
+      insuranceType: document.getElementById('insuranceType'),
+      street: document.getElementById('street'),
+      city: document.getElementById('city'),
+      postal: document.getElementById('postal')
+    };
+
+    // Ζωντανό φιλτράρισμα ΤΚ: μόνο ψηφία και max 5
+    f.postal.addEventListener('input', () => {
+      let v = f.postal.value.replace(/\D/g, '');
+      if (v.length > 5) v = v.slice(0, 5);
+      f.postal.value = v;
+    });
+
+    // Ζωντανό φιλτράρισμα τηλεφώνου: μόνο ψηφία και max 10
+    f.phone.addEventListener('input', () => {
+      let v = f.phone.value.replace(/\D/g, '');
+      if (v.length > 10) v = v.slice(0, 10);
+      f.phone.value = v;
+    });
+
+    let patientId = null;
+
+    async function loadPatient() {
+      try {
+        const res = await fetch(`/patients/search?amka=${encodeURIComponent(amka)}`, {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('not found');
+        const p = await res.json();
+        patientId = p.id;
+        f.amka.value = p.amka || '';
+        f.first.value = p.firstName || '';
+        f.last.value = p.lastName || '';
+        f.dob.value = p.dateOfBirth || '';
+        f.phone.value = p.phone || '';
+        f.email.value = p.email || '';
+        f.afm.value = p.afm || '';
+        f.idNumber.value = p.idNumber || '';
+        f.insuranceType.value = p.insuranceType || '';
+        f.street.value = p.addressStreet || '';
+        f.city.value = p.addressCity || '';
+        f.postal.value = p.addressPostalCode || '';
+      } catch (e) {
+        console.error(e);
+        msg.textContent = 'Σφάλμα φόρτωσης ασθενή';
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = '';
+      if (f.phone.value && !/^\d{10}$/.test(f.phone.value.trim())) {
+        msg.textContent = 'Τηλέφωνο: αν το συμπληρώσετε, πρέπει να είναι 10 ψηφία';
+        return;
+      }
+      if (f.postal.value && !/^\d{5}$/.test(f.postal.value.trim())) {
+        msg.textContent = 'ΤΚ: αν το συμπληρώσετε, πρέπει να είναι 5 ψηφία';
+        return;
+      }
+      const payload = {
+        amka: f.amka.value,
+        firstName: f.first.value.trim(),
+        lastName: f.last.value.trim(),
+        dateOfBirth: f.dob.value,
+        phone: f.phone.value.trim(),
+        email: f.email.value.trim(),
+        afm: f.afm.value.trim(),
+        idNumber: f.idNumber.value.trim(),
+        insuranceType: f.insuranceType.value,
+        addressStreet: f.street.value.trim(),
+        addressCity: f.city.value.trim(),
+        addressPostalCode: f.postal.value.trim()
+      };
+      try {
+        const res = await fetch(`/patients/${encodeURIComponent(patientId)}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const m = (Array.isArray(data.errors) && data.errors[0]?.message) || data.error || 'Αποτυχία ενημέρωσης';
+          msg.textContent = m;
+          return;
+        }
+        msg.style.color = 'green';
+        msg.textContent = 'Αποθηκεύτηκε';
+        setTimeout(() => { window.location.href = backBtn.href; }, 800);
+      } catch (err) {
+        console.error(err);
+        msg.textContent = 'Σφάλμα σύνδεσης με τον server';
+      }
+    });
+
+    // Διαγραφή ασθενή με επιβεβαίωση
+    document.getElementById('deleteBtn').addEventListener('click', async () => {
+      if (!patientId) {
+        msg.textContent = 'Δεν βρέθηκε ID ασθενή.';
+        return;
+      }
+      const ok = confirm('Επιβεβαιώνετε τη διαγραφή του ασθενή ΚΑΙ όλων των ιατρικών περιστατικών του; Η ενέργεια δεν μπορεί να αναιρεθεί.');
+      if (!ok) return;
+      msg.textContent = '';
+      try {
+        const res = await fetch(`/patients/${encodeURIComponent(patientId)}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) {
+          msg.textContent = 'Αποτυχία διαγραφής ασθενή';
+          return;
+        }
+        window.location.href = '/patients-mine.html';
+      } catch (err) {
+        console.error(err);
+        msg.textContent = 'Σφάλμα σύνδεσης με τον server';
+      }
+    });
+
+    loadPatient();
+  </script>
+</body>
+</html>

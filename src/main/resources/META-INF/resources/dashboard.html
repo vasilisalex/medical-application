@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ιστορικό Ασθενών</title>
+  <link rel="stylesheet" href="css/theme.css" />
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="#">Medical App</a>
+      <div class="d-flex align-items-center gap-2">
+        <span id="doctorName" class="text-muted"></span>
+        <a href="/profile.html" class="btn btn-outline-secondary btn-sm">Ρυθμίσεις προφίλ</a>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Αποσύνδεση</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="row g-4 mb-4 align-items-stretch">
+      <div class="col-12 col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Καταχώρηση Νέου Ασθενή</h5>
+            <p class="text-muted">Μετάβαση σε φόρμα δημιουργίας ασθενή και καταχώρησης ιατρικού ιστορικού.</p>
+            <a href="/patient-new.html" class="btn btn-primary mt-2">Μετάβαση</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Οι Ασθενείς Μου</h5>
+            <p class="text-muted">Λίστα ασθενών για τους οποίους έχεις καταχωρήσει/επεξεργαστεί το Ιατρικό Ιστορικό τους. Κάνε κλικ για λεπτομέρειες.</p>
+            <a href="/patients-mine.html" class="btn btn-primary mt-2">Προβολή Λίστας</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Αναζήτηση Ασθενή -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Αναζήτηση Ασθενή</h5>
+        <form id="searchForm" class="row g-4 align-items-center">
+          <div class="col-12 col-md-3">
+            <label class="form-label" for="sAmka">AMKA</label>
+            <input class="form-control input-lg" id="sAmka" placeholder="π.χ. 00000000000" />
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label" for="sFirst">Όνομα</label>
+            <input class="form-control input-lg to-upper" id="sFirst" placeholder="π.χ. ΑΛΕΞΑΝΔΡΟΣ" />
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label" for="sLast">Επώνυμο</label>
+            <input class="form-control input-lg to-upper" id="sLast" placeholder="π.χ. ΠΑΠΑΔΟΠΟΥΛΟΣ" />
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label">&nbsp;</label>
+            <button class="btn btn-primary btn-lg w-100 mt-0" type="submit">Αναζήτηση</button>
+          </div>
+          <div class="col-12">
+            <div id="searchMsg" class="text-danger mt-1" style="min-height:1em"></div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Αποτελέσματα Αναζήτησης (πολλαπλοί) -->
+    <div id="resultsCard" class="card mb-4 d-none">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Αποτελέσματα Αναζήτησης</h5>
+        <div class="table-responsive">
+          <table class="table table-hover" id="searchResultsTable">
+            <colgroup>
+              <col style="width:6%" />
+              <col style="width:18%" />
+              <col style="width:26%" />
+              <col style="width:50%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>AMKA</th>
+                <th>Ονοματεπώνυμο</th>
+                <th>Διεύθυνση Κατοικίας</th>
+              </tr>
+            </thead>
+            <tbody id="searchResultsBody"></tbody>
+          </table>
+        <div class="d-flex justify-content-end align-items-center gap-2 mt-2">
+          <button id="prevPage" class="btn btn-outline-secondary btn-sm">Προηγούμενη</button>
+          <span id="pageInfo" class="text-muted"></span>
+          <button id="nextPage" class="btn btn-outline-secondary btn-sm">Επόμενη</button>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Στοιχεία Ασθενή -->
+    <div id="patientCard" class="card mb-4 d-none">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Στοιχεία Ασθενή</h5>
+        <div class="row mb-3">
+          <div class="col-md-4"><strong>AMKA:</strong> <span id="pAmka"></span></div>
+          <div class="col-md-4"><strong>Ονοματεπώνυμο:</strong> <span id="pName"></span></div>
+          <div class="col-md-4"><strong>Ημ/νία Γέννησης:</strong> <span id="pDob"></span></div>
+          <div class="col-md-4"><strong>ΑΦΜ:</strong> <span id="pAfm"></span></div>
+          <div class="col-md-4"><strong>Τηλέφωνο:</strong> <span id="pPhone"></span></div>
+          <div class="col-md-4"><strong>Email:</strong> <span id="pEmail"></span></div>
+        </div>
+
+        <!-- Φόρμα Ενημέρωσης -->
+        <a id="viewPatientBtn" class="btn btn-outline-primary mb-3" href="#">Μετάβαση στη σελίδα ασθενή</a>
+        <form id="editPatientForm" class="row g-3 d-none">
+          <input id="epId" type="hidden" />
+          <div class="col-md-3">
+            <label for="epAmka" class="form-label">AMKA</label>
+            <input id="epAmka" class="form-control" inputmode="numeric" pattern="\d{11}" maxlength="11" title="Ακριβώς 11 ψηφία" required />
+          </div>
+          <div class="col-md-3">
+            <label for="epFirst" class="form-label">Όνομα</label>
+            <input id="epFirst" class="form-control to-upper" required />
+          </div>
+          <div class="col-md-3">
+            <label for="epLast" class="form-label">Επώνυμο</label>
+            <input id="epLast" class="form-control to-upper" required />
+          </div>
+          <div class="col-md-3">
+            <label for="epDob" class="form-label">Ημ/νία Γέννησης</label>
+            <input id="epDob" type="date" class="form-control" required />
+          </div>
+          <div class="col-md-3">
+            <label for="epPhone" class="form-label">Τηλέφωνο</label>
+            <input id="epPhone" class="form-control" inputmode="numeric" maxlength="10" pattern="\d{10}" title="Ακριβώς 10 ψηφία" />
+          </div>
+          <div class="col-md-3">
+            <label for="epEmail" class="form-label">Email</label>
+            <input id="epEmail" type="email" class="form-control" required />
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary" type="submit">Αποθήκευση Αλλαγών</button>
+            <span id="editPatientMsg" class="ms-3 text-danger" style="min-height:1em"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/uppercase.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

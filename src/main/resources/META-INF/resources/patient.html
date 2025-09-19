@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Στοιχεία Ασθενή</title>
+  <link rel="stylesheet" href="css/theme.css" />
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="/dashboard.html">Medical App</a>
+      <div class="d-flex gap-2">
+        <a href="/dashboard.html" class="btn btn-outline-secondary btn-sm">Πίσω στην Αρχική Σελίδα</a>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Αποσύνδεση</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div id="patientCard" class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Στοιχεία Ασθενή</h5>
+        <div class="kv-grid kv-read">
+          <div class="kv-field">
+            <div class="kv-label">AMKA</div>
+            <div class="kv-value"><span id="pAmka"></span></div>
+          </div>
+          <div class="kv-field">
+            <div class="kv-label">Ονοματεπώνυμο</div>
+            <div class="kv-value"><span id="pName"></span></div>
+          </div>
+          <div class="kv-field">
+            <div class="kv-label">Ημ/νία Γέννησης</div>
+            <div class="kv-value"><span id="pDob"></span></div>
+          </div>
+          <div class="kv-field">
+            <div class="kv-label">ΑΦΜ</div>
+            <div class="kv-value"><span id="pAfm"></span></div>
+          </div>
+          <div class="kv-field">
+            <div class="kv-label">Αρ. Ταυτότητας</div>
+            <div class="kv-value"><span id="pIdNumber"></span></div>
+          </div>
+          <div class="kv-field">
+            <div class="kv-label">Είδος Ασφάλειας</div>
+            <div class="kv-value"><span id="pInsurance"></span></div>
+          </div>
+          <div class="kv-field span-2">
+            <div class="kv-label">Διεύθυνση</div>
+            <div class="kv-value"><span id="pAddress"></span></div>
+          </div>
+          <div class="kv-field">
+            <div class="kv-label">Τηλέφωνο</div>
+            <div class="kv-value"><span id="pPhone"></span></div>
+          </div>
+          <div class="kv-field">
+            <div class="kv-label">Email</div>
+            <div class="kv-value"><span id="pEmail"></span></div>
+          </div>
+        </div>
+        <div class="patient-toolbar d-flex justify-content-end align-items-center gap-2 mt-2">
+          <small><strong>Ημ/νία Καταχώρησης:</strong> <span id="pCreated"></span></small>
+          <small><strong>Τελευταία Επεξεργασία:</strong> <span id="pUpdated"></span></small>
+          <a id="editPatientBtn" class="btn btn-outline-primary btn-sm" href="#">Επεξεργασία στοιχείων</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="recordsCard" class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Ιατρικό Ιστορικό</h5>
+          <a id="newRecordBtn" class="btn btn-success btn-sm" href="#">+ Νέα Εγγραφή</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm" id="recordsTable">
+            <colgroup>
+              <col style="width:6%" />
+              <col style="width:16%" />
+              <col style="width:20%" />
+              <col style="width:20%" />
+              <col style="width:20%" />
+              <col style="width:18%" />
+            </colgroup>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Ημερομηνία</th>
+                <th>Διάγνωση</th>
+                <th>Αγωγή</th>
+                <th>Εξετάσεις</th>
+                <th>Γιατρός</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="d-flex justify-content-end align-items-center gap-2 mt-2">
+          <button id="recPrev" class="btn btn-outline-secondary btn-sm">Προηγούμενη</button>
+          <span id="recPageInfo" class="text-muted"></span>
+          <button id="recNext" class="btn btn-outline-secondary btn-sm">Επόμενη</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/patient.js"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Νέα Εγγραφή Ιατρικού Ιστορικού</title>
+  <link rel="stylesheet" href="css/theme.css" />
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="/dashboard.html">Medical App</a>
+      <div class="d-flex gap-2">
+        <a id="backToPatient" class="btn btn-outline-secondary btn-sm" href="#">Πίσω στον ασθενή</a>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Αποσύνδεση</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Στοιχεία Ασθενή</h5>
+        <div class="kv-grid kv-read">
+          <div class="kv-field">
+            <div class="kv-label">AMKA</div>
+            <div class="kv-value"><span id="pAmka"></span></div>
+          </div>
+          <div class="kv-field">
+            <div class="kv-label">Ονοματεπώνυμο</div>
+            <div class="kv-value"><span id="pName"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Νέα Εγγραφή</h5>
+        <form id="newRecForm" class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">Ημερομηνία</label>
+            <input id="date" type="date" class="form-control" required />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Διάγνωση</label>
+            <input id="sickness" class="form-control to-upper" required />
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">Αγωγή</label>
+            <input id="medication" class="form-control to-upper" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Εξετάσεις</label>
+            <input id="exams" class="form-control to-upper" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Τύπος Επίσκεψης</label>
+            <input id="visitType" class="form-control to-upper" placeholder="π.χ. Επίσκεψη, Εισαγωγή" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Δομή/Μονάδα</label>
+            <input id="facility" class="form-control to-upper" placeholder="Νοσοκομείο/Κλινική/Ιατρείο" />
+          </div>
+          
+
+          <div class="col-12">
+            <label class="form-label">Συμπτώματα</label>
+            <input id="symptoms" class="form-control to-upper" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">ICD-10</label>
+            <input id="diagnosisCode" class="form-control to-upper" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Δοσολογία/Διάρκεια</label>
+            <input id="dosage" class="form-control to-upper" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Επανεξέταση</label>
+            <input id="followUpDate" type="date" class="form-control" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Σημειώσεις</label>
+            <textarea id="notes" class="form-control to-upper" rows="3"></textarea>
+          </div>
+
+          <div class="col-12">
+            <button class="btn btn-success" type="submit">Καταχώρηση</button>
+            <span id="msg" class="ms-2 text-danger"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/uppercase.js"></script>
+  <script>
+    const token = localStorage.getItem('jwt');
+    if (!token) window.location.href = '/login.html';
+    const params = new URLSearchParams(location.search);
+    const amka = params.get('amka');
+    document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('jwt'); window.location.href = '/'; });
+    document.getElementById('backToPatient').href = `/patient.html?amka=${encodeURIComponent(amka)}`;
+
+    async function loadPatient() {
+      const res = await fetch(`/patients/search?amka=${encodeURIComponent(amka)}`, { headers: { 'Authorization': 'Bearer ' + token }});
+      if (!res.ok) return; const p = await res.json();
+      document.getElementById('pAmka').textContent = p.amka || '';
+      document.getElementById('pName').textContent = `${p.firstName||''} ${p.lastName||''}`.trim();
+    }
+    loadPatient();
+
+    let currentDoctorSpec = '';
+    async function loadDoctor() {
+      try {
+        const res = await fetch('/doctors/me', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (!res.ok) return;
+        const d = await res.json();
+        const drNameEl = document.getElementById('drName');
+        if (drNameEl) drNameEl.textContent = `${d.firstName||''} ${d.lastName||''}`.trim();
+        currentDoctorSpec = d.specialty || '';
+        const drSpecEl = document.getElementById('drSpec');
+        if (drSpecEl) drSpecEl.textContent = currentDoctorSpec;
+      } catch {}
+    }
+    loadDoctor();
+
+    const form = document.getElementById('newRecForm');
+    const msg = document.getElementById('msg');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); msg.textContent='';
+      const payload = {
+        patientAmka: amka,
+        date: document.getElementById('date').value,
+        sickness: document.getElementById('sickness').value.trim(),
+        medication: document.getElementById('medication').value.trim(),
+        exams: document.getElementById('exams').value.trim(),
+        visitType: document.getElementById('visitType').value.trim(),
+        facility: document.getElementById('facility').value.trim(),
+        doctorSpecialty: (currentDoctorSpec || '').trim(),
+        symptoms: document.getElementById('symptoms').value.trim(),
+        diagnosisCode: document.getElementById('diagnosisCode').value.trim(),
+        dosage: document.getElementById('dosage').value.trim(),
+        followUpDate: document.getElementById('followUpDate').value,
+        notes: document.getElementById('notes').value.trim()
+      };
+      if (!payload.date || !payload.sickness) { msg.textContent='Συμπληρώστε ημερομηνία και διάγνωση'; return; }
+      try {
+        const res = await fetch('/medicalrecords', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify(payload)});
+        const data = await res.json().catch(()=>({}));
+        if (!res.ok) { msg.textContent = (Array.isArray(data.errors)&&data.errors[0]?.message) || data.error || 'Αποτυχία καταχώρησης'; return; }
+        window.location.href = `/patient.html?amka=${encodeURIComponent(amka)}`;
+      } catch(err){ console.error(err); msg.textContent='Σφάλμα σύνδεσης'; }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medical App</title>
+  <link rel="stylesheet" href="css/theme.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body { min-height: 100vh; display: flex; align-items: center; background: #f6f7fb; }
+  </style>
+  
+  <!-- σχόλιο: χρησιμοποιούμε το ίδιο login.js για υποβολή -->
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <h3 class="text-center mb-4">Medical App</h3>
+            <div class="row g-4 justify-content-center">
+              <div class="col-12 col-lg-7">
+                <form id="loginForm">
+                  <div class="mb-3">
+                    <label for="amka" class="form-label">AMKA</label>
+                    <input type="text" id="amka" class="form-control" inputmode="numeric" pattern="\d{11}" maxlength="11" title="Ακριβώς 11 ψηφία" required />
+                    <div id="loginAmkaHelp" class="form-text text-danger" style="min-height:1em"></div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="password" class="form-label">Κωδικός</label>
+                    <input type="password" id="password" class="form-control" required />
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100 fs-5">Σύνδεση</button>
+                </form>
+                <div id="loginMessage" class="text-danger mt-3" style="display:none"></div>
+                <div class="mt-4 pt-3 border-top d-flex align-items-center">
+                  <span class="mb-0"><strong>Νέος γιατρός στο σύστημα;</strong></span>
+                  <a href="/register.html" class="ms-2 text-decoration-none">Εγγραφή</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+</html>

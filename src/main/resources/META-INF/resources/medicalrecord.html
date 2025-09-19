@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Επεξεργασία Ιατρικού Ιστορικού</title>
+  <link rel="stylesheet" href="css/theme.css" />
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-light bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="/dashboard.html">Medical App</a>
+      <div class="d-flex gap-2">
+        <a id="backToPatient" class="btn btn-outline-secondary btn-sm" href="#">Πίσω στον ασθενή</a>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Αποσύνδεση</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Στοιχεία Ασθενή</h5>
+        <div class="kv-grid kv-read">
+          <div class="kv-field">
+            <div class="kv-label">AMKA</div>
+            <div class="kv-value"><span id="pAmka"></span></div>
+          </div>
+          <div class="kv-field">
+            <div class="kv-label">Ονοματεπώνυμο</div>
+            <div class="kv-value"><span id="pName"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Ιατρικό Περιστατικό</h5>
+        <form id="editForm" class="row g-3">
+          <div class="col-md-3">
+            <label class="form-label">Ημερομηνία</label>
+            <input id="date" type="date" class="form-control" required />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Διάγνωση</label>
+            <input id="sickness" class="form-control to-upper" required />
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">Αγωγή</label>
+            <input id="medication" class="form-control to-upper" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Εξετάσεις</label>
+            <input id="exams" class="form-control to-upper" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Τύπος Επίσκεψης</label>
+            <input id="visitType" class="form-control to-upper" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Δομή/Μονάδα</label>
+            <input id="facility" class="form-control to-upper" />
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label">Συμπτώματα</label>
+            <input id="symptoms" class="form-control to-upper" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">ICD-10</label>
+            <input id="diagnosisCode" class="form-control to-upper" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Δοσολογία/Διάρκεια</label>
+            <input id="dosage" class="form-control to-upper" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Επανεξέταση</label>
+            <input id="followUpDate" type="date" class="form-control" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Σημειώσεις</label>
+            <textarea id="notes" class="form-control to-upper" rows="3"></textarea>
+          </div>
+
+          <div class="col-12 mt-2 section-divider">
+            <div class="kv-grid kv-read">
+              <div class="kv-field">
+                <div class="kv-label">Γιατρός</div>
+                <div class="kv-value"><span id="recDoctor"></span></div>
+              </div>
+              <div class="kv-field">
+                <div class="kv-label">Ειδικότητα</div>
+                <div class="kv-value"><span id="recDoctorSpec"></span></div>
+              </div>
+              <div class="kv-field">
+                <div class="kv-label">Καταχώρηση</div>
+                <div class="kv-value"><span id="recCreated"></span></div>
+              </div>
+              <div class="kv-field">
+                <div class="kv-label">Τελευταία ενημέρωση</div>
+                <div class="kv-value"><span id="recUpdated"></span></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+              <button id="saveBtn" class="btn btn-primary" type="submit">Αποθήκευση</button>
+              <span id="msg" class="ms-2 text-danger"></span>
+            </div>
+            <button id="deleteRecBtn" type="button" class="btn btn-outline-danger" style="display:none">Διαγραφή Εγγραφής</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/uppercase.js"></script>
+  <script src="js/medicalrecord.js"></script>
+</body>
+</html>

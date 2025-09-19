@@ -10,7 +10,10 @@
   <nav class="navbar navbar-light bg-white shadow-sm">
     <div class="container">
       <a class="navbar-brand" href="/dashboard.html">Medical App</a>
-      <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Αποσύνδεση</button>
+      <div class="d-flex gap-2">
+        <a href="/dashboard.html" class="btn btn-outline-secondary btn-sm">Πίσω στην Αρχική Σελίδα</a>
+        <button id="logoutBtn" class="btn btn-outline-danger btn-sm">Αποσύνδεση</button>
+      </div>
     </div>
   </nav>
 
@@ -18,18 +21,18 @@
     <div class="card mb-4">
       <div class="card-body">
         <h5 class="card-title">Καταχώρηση Νέου Ασθενή</h5>
-        <form id="newPatientForm" class="row g-3">
+        <form id="newPatientForm" class="row g-3 form-kv">
           <div class="col-md-3">
             <label for="amka" class="form-label">AMKA</label>
             <input id="amka" class="form-control" inputmode="numeric" pattern="\d{11}" maxlength="11" title="Ακριβώς 11 ψηφία" required />
           </div>
           <div class="col-md-3">
             <label for="first" class="form-label">Όνομα</label>
-            <input id="first" class="form-control" required />
+            <input id="first" class="form-control to-upper" required />
           </div>
           <div class="col-md-3">
             <label for="last" class="form-label">Επώνυμο</label>
-            <input id="last" class="form-control" required />
+            <input id="last" class="form-control to-upper" required />
           </div>
           <div class="col-md-3">
             <label for="dob" class="form-label">Ημ/νία Γέννησης</label>
@@ -41,7 +44,7 @@
           </div>
           <div class="col-md-3">
             <label for="idNumber" class="form-label">Αρ. Ταυτότητας</label>
-            <input id="idNumber" class="form-control" />
+            <input id="idNumber" class="form-control to-upper" />
           </div>
           <div class="col-md-3">
             <label for="insuranceType" class="form-label">Είδος Ασφάλειας</label>
@@ -51,28 +54,31 @@
               <option value="private">Ιδιωτική</option>
             </select>
           </div>
-          <div class="col-md-3">
-            <label for="phone" class="form-label">Τηλέφωνο</label>
-            <input id="phone" class="form-control" />
-          </div>
-          <div class="col-md-3">
-            <label for="email" class="form-label">Email</label>
-            <input id="email" type="email" class="form-control" required />
-          </div>
           <div class="col-12 mt-2">
-            <h6>Διεύθυνση</h6>
+            <div class="section-title">Διεύθυνση Κατοικίας</div>
           </div>
           <div class="col-md-6">
             <label for="street" class="form-label">Οδός/Αριθμός</label>
-            <input id="street" class="form-control" />
+            <input id="street" class="form-control to-upper" />
           </div>
           <div class="col-md-3">
             <label for="city" class="form-label">Πόλη</label>
-            <input id="city" class="form-control" />
+            <input id="city" class="form-control to-upper" />
           </div>
           <div class="col-md-3">
             <label for="postal" class="form-label">ΤΚ</label>
-            <input id="postal" class="form-control" maxlength="5" />
+            <input id="postal" class="form-control" maxlength="5" inputmode="numeric" pattern="\d{5}" title="Ακριβώς 5 ψηφία" />
+          </div>
+          <div class="col-12 mt-3">
+            <div class="section-title">Επικοινωνία</div>
+          </div>
+          <div class="col-md-6">
+            <label for="phone" class="form-label">Τηλέφωνο</label>
+            <input id="phone" class="form-control" inputmode="numeric" maxlength="10" pattern="\d{10}" title="Ακριβώς 10 ψηφία" />
+          </div>
+          <div class="col-md-6">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" type="email" class="form-control" required />
           </div>
           <div class="col-12">
             <button class="btn btn-success" type="submit">Καταχώρηση</button>
@@ -91,6 +97,7 @@
     </div>
   </div>
 
+  <script src="js/uppercase.js"></script>
   <script src="js/patient-new.js"></script>
 </body>
 </html>

@@ -1,0 +1,14 @@
+/* ιδιο στυλ με login */
+.bg-med-bg {
+    background-color: #e9f7fe;
+  }
+  
+  .med-title {
+    color: #0275d8;
+    font-weight: 500;
+  }
+  
+  /* πινακες πιο compact */
+  table {
+    font-size: 0.95rem;
+  }
