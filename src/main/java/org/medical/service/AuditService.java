@@ -2,6 +2,7 @@ package org.medical.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import io.quarkus.security.identity.SecurityIdentity;
 import org.medical.model.AuditLog;
 import org.medical.model.Doctor;
@@ -20,6 +21,7 @@ public class AuditService {
      * - Ανακτά τον γιατρό από το JWT (subject = doctor.amka) και σώζει το id.
      * - Επιτρέπει null για patientAmka ή recordId όπου δεν υπάρχει.
      */
+    @Transactional
     public void log(String action, String patientAmka, Long recordId) {
         String doctorAmka = identity != null && identity.getPrincipal() != null
                 ? identity.getPrincipal().getName() : null;
@@ -38,4 +40,3 @@ public class AuditService {
         al.persist();
     }
 }
-
