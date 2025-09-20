@@ -156,6 +156,26 @@ public class PatientResource {
     }
 
     /**
+     * GET /patients/{amka}
+     * Επιστρέφει προφίλ ασθενή βάσει AMKA (READ profile) με audit καταγραφή.
+     */
+    @GET
+    @Path("/{amka}")
+    @RolesAllowed("doctor")
+    public Response getPatientProfile(@PathParam("amka") String amka) {
+        if (amka == null || amka.trim().isEmpty()) {
+            throw org.medical.error.ApiException.badRequest("AMKA is required");
+        }
+        Patient patient = Patient.find("amka", amka.trim()).firstResult();
+        if (patient == null) {
+            throw org.medical.error.ApiException.notFound("No patient found with AMKA: " + amka);
+        }
+        // Audit: ανάγνωση προφίλ ασθενή
+        audit.log("READ", patient.amka, null);
+        return Response.ok(patient).build();
+    }
+
+    /**
      * GET /patients/mine
      * Επιστρέφει ασθενείς για τους οποίους ο τρέχων γιατρός
      * έχει καταχωρήσει τουλάχιστον ένα ιατρικό περιστατικό.

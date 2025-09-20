@@ -23,10 +23,10 @@ public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundExceptio
                 .type(MediaType.APPLICATION_JSON)
                 .entity(Map.of(
                         "error", "not_found",
+                        "code", "not_found",
                         "message", message,
                         "path", path
                 ))
                 .build();
     }
 }
-

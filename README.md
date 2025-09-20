@@ -51,6 +51,7 @@
 - `POST /`: δημιουργία ασθενή (θέτει `createdBy` τον τρέχοντα γιατρό)
 - `PUT /{id}`: ενημέρωση, με έλεγχο AMKA conflict
 - `DELETE /{id}`: διαγραφή (σβήνει πρώτα τα medical records)
+- `GET /{amka}`: ανάγνωση προφίλ ασθενή βάσει AMKA (με audit READ)
 - `GET /search?amka=`: αναζήτηση βάσει AMKA
 - `GET /mine`: ασθενείς με τουλάχιστον ένα record από τον τρέχοντα γιατρό
 - `GET /search-any?q=`: exact first/last name (case‑insensitive) ή partial AMKA
@@ -120,18 +121,51 @@
 Όλα τα errors γυρίζουν ομοιόμορφο JSON:
 
 ```
-{ "error": "<code>", "message": "<human-friendly>", "path": "/request/path" }
+{ "error": "<code>", "code": "<code>", "message": "<human-friendly>", "path": "/request/path" }
 ```
 
 Validation (400):
 
 ```
-{ "error": "validation_error", "message": "Validation failed", "path": "/doctors/register", "errors": [ { "field": "email", "message": "must be a well-formed email address" } ] }
+{ "error": "validation_error", "code": "validation_error", "message": "Validation failed", "path": "/doctors/register", "errors": [ { "field": "email", "message": "must be a well-formed email address" } ] }
 ```
 
 Codes: 400 `bad_request|validation_error`, 401 `unauthorized`, 403 `forbidden`, 404 `not_found`, 409 `conflict`
 
 —
+
+## Dev/Test Seed Data
+Σε dev και test προφίλ γίνεται seed ελάχιστων δεδομένων για εύκολα demos:
+- Doctor A: AMKA `11111111111`, email `doca@example.com`, password `Abcdef1!`
+- Doctor B: AMKA `22222222222`, email `docb@example.com`, password `Abcdef1!`
+- Patient P: AMKA `99999999999` (με ένα medical record από τον Doctor A)
+
+—
+
+## Postman Collection
+- Αρχείο: `postman/medical-app.postman_collection.json`
+- Μεταβλητές: `{{base_url}}` (default `http://localhost:8080`), `{{token}}`, `{{patientId}}`, `{{patientAmka}}`, `{{recordId}}` + helpers για seeded data
+- Φάκελοι/Κατηγορίες:
+  - Doctors (login/register/me/update/password)
+  - Patients (CRUD, search, search-adv, profile by AMKA)
+  - Medical Records (CRUD)
+  - Audit Logs (search, export CSV)
+  - Errors (Examples) για 400/401/403/404/409
+
+—
+
+## Scripts
+- `scripts/curl-errors.sh`: αυτοματοποιεί κλήσεις που παράγουν τυποποιημένα σφάλματα (400/401/403/404/409). Τρέχει μετά το `mvn quarkus:dev`.
+
+—
+
+## Testing
+- Εκτέλεση: `./mvnw test`
+- Καλύπτει:
+  - ApiExceptionMapper: 400/404/409 με ενιαίο envelope
+  - ValidationExceptionMapper: 400 με `errors[]`
+  - Security mappers: 401 χωρίς token, 403 forbidden
+  - AuditService: ότι γράφει σωστά `doctorId/patientAmka/recordId/action`
 
 ## Build, Run, Deploy
 - Build: `./mvnw -DskipTests package`

@@ -25,6 +25,7 @@ public class AuthzExceptionMappers {
                     .type(MediaType.APPLICATION_JSON)
                     .entity(Map.of(
                             "error", "unauthorized",
+                            "code", "unauthorized",
                             "message", message,
                             "path", path
                     ))
@@ -45,6 +46,7 @@ public class AuthzExceptionMappers {
                     .type(MediaType.APPLICATION_JSON)
                     .entity(Map.of(
                             "error", "forbidden",
+                            "code", "forbidden",
                             "message", message,
                             "path", path
                     ))
@@ -52,4 +54,3 @@ public class AuthzExceptionMappers {
         }
     }
 }
-

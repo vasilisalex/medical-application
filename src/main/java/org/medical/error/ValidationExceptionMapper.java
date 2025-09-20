@@ -29,6 +29,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
                 .type(MediaType.APPLICATION_JSON)
                 .entity(Map.of(
                         "error", "validation_error",
+                        "code", "validation_error",
                         "message", "Validation failed",
                         "path", path,
                         "errors", errors

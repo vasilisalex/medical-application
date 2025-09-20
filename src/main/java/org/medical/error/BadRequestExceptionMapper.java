@@ -23,10 +23,10 @@ public class BadRequestExceptionMapper implements ExceptionMapper<BadRequestExce
                 .type(MediaType.APPLICATION_JSON)
                 .entity(Map.of(
                         "error", "bad_request",
+                        "code", "bad_request",
                         "message", message,
                         "path", path
                 ))
                 .build();
     }
 }
-

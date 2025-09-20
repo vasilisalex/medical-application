@@ -21,10 +21,10 @@ public class ApiExceptionMapper implements ExceptionMapper<ApiException> {
                 .type(MediaType.APPLICATION_JSON)
                 .entity(Map.of(
                         "error", exception.code,
+                        "code", exception.code,
                         "message", exception.getMessage() != null ? exception.getMessage() : "",
                         "path", path
                 ))
                 .build();
     }
 }
-
