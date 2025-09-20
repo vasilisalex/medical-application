@@ -52,6 +52,9 @@ Stack highlights:
   - `GET /{id}`: single record
   - `PUT /{id}`: update record
   - `DELETE /{id}`: only the creating doctor may delete (403 otherwise)
+- `AuditLogResource` (`/audit-logs`)
+  - `GET /audit-logs`: list audit rows with optional filters (`doctorId`, `patientAmka`, `recordId`, `action`, `from`, `to`, paging)
+  - `GET /audit-logs/export`: export the same selection as CSV
 
 ### 3.2 Entities (JPA/Panache)
 - `Doctor`: `amka` (unique), names, email (unique), `passwordHash`, contact/office details.
@@ -62,15 +65,19 @@ All entities extend `PanacheEntity` (provides `id`, helpers like `find`, `list`,
 
 ### 3.3 DTOs & Validation
 - DTOs: `RegisterDoctorDTO`, `LoginDoctorDTO`, `UpdateDoctorDTO`, `ChangePasswordDTO`, `RegisterPatientDTO`, `CreateMedicalRecordDTO`.
-- Validation examples:
-  - AMKA/phone/postal codes via `@Pattern`
-  - Email via `@Email`
-  - Password policy via `@Pattern` (see Security below)
-- `ValidationExceptionMapper` produces `{ "errors": [ { "field": ..., "message": ... } ] }` with HTTP 400.
+- Field rules (server-side Bean Validation):
+  - AMKA: `@Pattern("\\d{11}")` on doctor/patient/login and `patientAmka` in medical record DTOs.
+  - Phone: `@Pattern("\\d{10}")` on doctor phone (register/update).
+  - Postal code: `@Pattern("\\d{5}")` (doctor office and patient address).
+  - AFM: `@Pattern("\\d{9}")` when provided.
+  - Email: `@Email` for email fields; required fields use `@NotBlank`/`@NotNull`.
+  - Password: complexity via regex (see Security).
+- Cross-field checks: confirmation of password is enforced in resources (e.g., `DoctorResource.register` and `changePassword`), not via a custom validator.
+- `ValidationExceptionMapper` returns HTTP 400 with `{ errors: [ { field, message } ] }`.
 
 ### 3.4 Security
 - Password storage: BCrypt via `io.quarkus.elytron.security.common.BcryptUtil`.
-- Authentication: JWT (SmallRye JWT). Keys in `src/main/resources/META-INF/privateKey.pem` and `publicKey.pem`.
+- Authentication: JWT (SmallRye JWT). Verification key: `META-INF/publicKey.pem`. Signing key is expected at `META-INF/privateKey.pem` (git‑ignored by design; provide locally). Config uses `mp.jwt.verify.publickey.location` and `smallrye.jwt.sign.key.location`.
 - Authorization: `@RolesAllowed("doctor")` on protected endpoints.
 - JWT claims: subject (doctor AMKA), issuer `medical-app`, role `doctor`, plus basic name claims.
 
@@ -84,8 +91,13 @@ Password policy (frontend + backend enforced):
 - `application.properties`:
   - `quarkus.datasource.*` for PostgreSQL connection
   - Hibernate generation: `update` in dev, `drop-and-create` in test
-  - JWT: key locations and issuer
+  - JWT: key locations and issuer; token lifetime configurable
 - SQL logging enabled for transparency during dev.
+
+### 3.6 Audit Logging
+- Entity: `AuditLog` with columns: `doctorId`, `patientAmka`, `recordId`, `action`, `at` and DB indexes on `patientAmka`, `recordId`, `doctorId`.
+- Service: `AuditService.log(action, patientAmka, recordId)` is `@Transactional`, derives the current doctor from `SecurityIdentity` (JWT subject=AMKA), resolves `doctor.id`, and persists the row.
+- Usage: called on patient create/update/delete and medical record create/update/delete; read operations also log per record when applicable.
 
 ---
 
@@ -128,7 +140,7 @@ Password policy (frontend + backend enforced):
 
 ### 6.3 Configuration
 - DB: `quarkus.datasource.jdbc.url=jdbc:postgresql://<host>:5432/medicaldb`
-- Keys: `META-INF/privateKey.pem` and `META-INF/publicKey.pem`
+- Keys: `META-INF/publicKey.pem` (tracked) and `META-INF/privateKey.pem` (git‑ignored; provide locally)
 - Issuer: `mp.jwt.verify.issuer=medical-app`
 
 ### 6.4 Docker (optional)
@@ -152,14 +164,16 @@ Doctor (id, amka[unique], firstName, lastName, email[unique], passwordHash, spec
 Patient (id, amka[unique], firstName, lastName, dateOfBirth, phone, email, afm, idNumber, insuranceType, addressStreet, addressCity, addressPostalCode, createdBy->Doctor, createdAt, updatedAt)
 
 MedicalRecord (id, date, sickness, medication, exams, visitType, facility, doctorSpecialty, symptoms, diagnosisCode, dosage, followUpDate, notes, doctor->Doctor, patient->Patient, createdAt, updatedAt)
+
+AuditLog (id, doctorId[idx], patientAmka[idx], recordId[idx], action, at)
 ```
 
 ---
 
 ## 9. Known Notes / Future Enhancements
-- Config keys: Some `quarkus.jwt.*` keys log as unrecognized in current Quarkus version; behavior is still correct via SmallRye JWT defaults. Consider aligning to the latest config properties.
-- Add pagination/filtering for patient and record lists.
-- Add auditing (who changed what/when) and soft deletes.
+- Config keys: `quarkus.jwt.token.*` may log as unrecognized in some Quarkus versions; verification/signing still work via SmallRye JWT keys.
+- Pagination/filtering across listings (patients, records, audits).
+- Auditing exists; consider retention, redaction, and doctor lookup denormalization if needed.
 - Introduce integration tests for critical flows (register, login, CRUD).
 - Consider H2 profile for easier local demos without PostgreSQL.
 - Add E2E smoke tests (Playwright/Cypress) for demo automation.
@@ -170,7 +184,7 @@ MedicalRecord (id, date, sickness, medication, exams, visitType, facility, docto
 - Backend code: `src/main/java/org/medical/...`
 - Frontend assets: `src/main/resources/META-INF/resources/...`
 - Configuration: `src/main/resources/application.properties`
-- Keys: `src/main/resources/META-INF/privateKey.pem`, `publicKey.pem`
+- Keys: `src/main/resources/META-INF/publicKey.pem` (tracked) and `META-INF/privateKey.pem` (git‑ignored)
 - Docs: `docs/TECHNICAL_OVERVIEW.md`
 
 ---
@@ -190,6 +204,7 @@ MedicalRecord (id, date, sickness, medication, exams, visitType, facility, docto
 - Password policy (client): `META-INF/resources/js/register.js`, `js/profile.js`
 - BCrypt & JWT issuance: `org.medical.resource.DoctorResource`
 - Validation mapping: `org.medical.error.ValidationExceptionMapper`
+- Auditing: `org.medical.service.AuditService`, `org.medical.resource.AuditLogResource`
 
 ### 3.2 Standardized Error Responses
 
