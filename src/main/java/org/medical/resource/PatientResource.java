@@ -10,6 +10,7 @@ import org.medical.dto.RegisterPatientDTO;
 import org.medical.model.Patient;
 import org.medical.model.Doctor;
 import io.quarkus.security.identity.SecurityIdentity;
+import org.medical.service.AuditService;
 
 import java.util.List;
 
@@ -20,6 +21,9 @@ public class PatientResource {
 
     @Inject
     SecurityIdentity identity;
+
+    @Inject
+    AuditService audit;
 
     /**
      * GET /patients
@@ -61,7 +65,8 @@ public class PatientResource {
         patient.updatedAt = patient.createdAt;
         patient.createdBy = creator;
         patient.persist();
-
+        // Audit: δημιουργία ασθενή
+        audit.log("CREATE", patient.amka, null);
         return Response.status(Response.Status.CREATED).entity(patient).build();
     }
 
@@ -76,17 +81,13 @@ public class PatientResource {
     public Response updatePatient(@PathParam("id") Long id, @jakarta.validation.Valid RegisterPatientDTO dto) {
         Patient patient = Patient.findById(id);
         if (patient == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Patient not found with id " + id)
-                    .build();
+            throw org.medical.error.ApiException.notFound("Patient not found with id " + id);
         }
 
         if (!patient.amka.equals(dto.amka)) {
             boolean exists = Patient.find("amka", dto.amka).count() > 0;
             if (exists) {
-                return Response.status(Response.Status.CONFLICT)
-                        .entity("Another patient already uses this AMKA")
-                        .build();
+                throw org.medical.error.ApiException.conflict("Another patient already uses this AMKA");
             }
         }
 
@@ -103,6 +104,8 @@ public class PatientResource {
         patient.addressCity = dto.addressCity;
         patient.addressPostalCode = dto.addressPostalCode;
         patient.updatedAt = java.time.LocalDateTime.now();
+        // Audit: ενημέρωση ασθενή
+        audit.log("UPDATE", patient.amka, null);
 
         return Response.ok(patient).build();
     }
@@ -120,14 +123,14 @@ public class PatientResource {
     public Response deletePatientById(@PathParam("id") Long id) {
         Patient patient = Patient.findById(id);
         if (patient == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Patient not found with id " + id)
-                    .build();
+            throw org.medical.error.ApiException.notFound("Patient not found with id " + id);
         }
         // Πρώτα διαγράφουμε όλα τα ιατρικά περιστατικά του ασθενή ώστε να μην σπάσει το FK
         org.medical.model.MedicalRecord.delete("patient.id", id);
         // Έπειτα διαγράφουμε τον ασθενή
         Patient.deleteById(id);
+        // Audit: διαγραφή ασθενή
+        audit.log("DELETE", patient.amka, null);
         return Response.noContent().build();
     }
 
@@ -144,11 +147,11 @@ public class PatientResource {
         Patient patient = Patient.find("amka", amka.trim()).firstResult();
 
         if (patient == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("No patient found with AMKA: " + amka)
-                    .build();
+            throw org.medical.error.ApiException.notFound("No patient found with AMKA: " + amka);
         }
 
+        // Audit: ανάγνωση στοιχείων ασθενή
+        audit.log("READ", patient.amka, null);
         return Response.ok(patient).build();
     }
 

@@ -49,9 +49,7 @@ public class DoctorResource {
     public Response register(@jakarta.validation.Valid RegisterDoctorDTO dto) {
         // 1) ελεγχος passwords
         if (!dto.password.equals(dto.confirmPassword)) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "to password den tairiazei me tin epivevaiosi"))
-                    .build();
+            throw org.medical.error.ApiException.badRequest("to password den tairiazei me tin epivevaiosi");
         }
         String amka  = dto.amka.trim();
         String email = dto.email.trim().toLowerCase();
@@ -60,9 +58,7 @@ public class DoctorResource {
         boolean exists = Doctor.find("amka", amka).count() > 0
                       || Doctor.find("email", email).count() > 0;
         if (exists) {
-            return Response.status(Response.Status.CONFLICT)
-                    .entity(Map.of("error", "iparxei idi giatros me auto to AMKA i email"))
-                    .build();
+            throw org.medical.error.ApiException.conflict("iparxei idi giatros me auto to AMKA i email");
         }
 
         // 3) αποθηκευση του γιατρου
@@ -105,15 +101,11 @@ public class DoctorResource {
         // αναζητηση γιατρου με amka
         Doctor doctor = Doctor.find("amka", dto.amka.trim()).firstResult();
         if (doctor == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(Map.of("error", "doctor not found"))
-                    .build();
+            throw org.medical.error.ApiException.notFound("doctor not found");
         }
         // ελεγχος κρυπτογραφημενου password
         if (!BcryptUtil.matches(dto.password, doctor.passwordHash)) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(Map.of("error", "invalid password"))
-                    .build();
+            throw org.medical.error.ApiException.unauthorized("invalid password");
         }
         // δημιουργια JWT με claim ρολου και στοιχειων
         String token = Jwt.claims()
@@ -142,7 +134,7 @@ public class DoctorResource {
     public Response me() {
         String amka = identity.getPrincipal().getName();
         Doctor d = Doctor.find("amka", amka).firstResult();
-        if (d == null) return Response.status(Response.Status.NOT_FOUND).build();
+        if (d == null) throw org.medical.error.ApiException.notFound("doctor not found");
         return Response.ok(Map.ofEntries(
                 Map.entry("id", d.id),
                 Map.entry("amka", d.amka),
@@ -170,15 +162,13 @@ public class DoctorResource {
     public Response updateMe(@jakarta.validation.Valid org.medical.dto.UpdateDoctorDTO dto) {
         String amka = identity.getPrincipal().getName();
         Doctor d = Doctor.find("amka", amka).firstResult();
-        if (d == null) return Response.status(Response.Status.NOT_FOUND).build();
+        if (d == null) throw org.medical.error.ApiException.notFound("doctor not found");
 
         String newEmail = dto.email.trim().toLowerCase();
         if (!newEmail.equals(d.email)) {
             boolean exists = Doctor.find("email", newEmail).count() > 0;
             if (exists) {
-                return Response.status(Response.Status.CONFLICT)
-                        .entity(Map.of("error", "email already in use"))
-                        .build();
+                throw org.medical.error.ApiException.conflict("email already in use");
             }
         }
 
@@ -219,17 +209,13 @@ public class DoctorResource {
     public Response changePassword(@jakarta.validation.Valid org.medical.dto.ChangePasswordDTO dto) {
         String amka = identity.getPrincipal().getName();
         Doctor d = Doctor.find("amka", amka).firstResult();
-        if (d == null) return Response.status(Response.Status.NOT_FOUND).build();
+        if (d == null) throw org.medical.error.ApiException.notFound("doctor not found");
 
         if (!BcryptUtil.matches(dto.currentPassword, d.passwordHash)) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(Map.of("error", "current password incorrect"))
-                    .build();
+            throw org.medical.error.ApiException.unauthorized("current password incorrect");
         }
         if (!dto.newPassword.equals(dto.confirmPassword)) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "password confirmation does not match"))
-                    .build();
+            throw org.medical.error.ApiException.badRequest("password confirmation does not match");
         }
         d.passwordHash = BcryptUtil.bcryptHash(dto.newPassword);
         return Response.noContent().build();

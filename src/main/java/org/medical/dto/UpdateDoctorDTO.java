@@ -25,6 +25,7 @@ public class UpdateDoctorDTO {
     public String medicalAssociation;
 
     @NotBlank
+    @Pattern(regexp = "\\d{10}", message = "phone must be exactly 10 digits")
     public String phone;
 
     @NotBlank

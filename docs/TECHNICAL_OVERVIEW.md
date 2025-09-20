@@ -190,6 +190,53 @@ MedicalRecord (id, date, sickness, medication, exams, visitType, facility, docto
 - Password policy (client): `META-INF/resources/js/register.js`, `js/profile.js`
 - BCrypt & JWT issuance: `org.medical.resource.DoctorResource`
 - Validation mapping: `org.medical.error.ValidationExceptionMapper`
+
+### 3.2 Standardized Error Responses
+
+All API errors return a uniform JSON envelope handled by ExceptionMappers:
+
+General shape:
+
+```
+{
+  "error": "<code>",
+  "message": "<human-friendly message>",
+  "path": "/request/path"
+}
+```
+
+Validation (400) additionally includes field errors:
+
+```
+{
+  "error": "validation_error",
+  "message": "Validation failed",
+  "path": "/doctors/register",
+  "errors": [ { "field": "email", "message": "must be a well-formed email address" } ]
+}
+```
+
+Mapped status codes and codes:
+
+- 400: `bad_request` or `validation_error`
+- 401: `unauthorized`
+- 403: `forbidden`
+- 404: `not_found`
+- 409: `conflict`
+
+Examples:
+
+- 401 (login wrong password):
+  `{ "error": "unauthorized", "message": "invalid password", "path": "/doctors/login" }`
+- 404 (unknown patient):
+  `{ "error": "not_found", "message": "No patient found with AMKA: 123...", "path": "/patients/search" }`
+- 409 (duplicate email):
+  `{ "error": "conflict", "message": "email already in use", "path": "/doctors/me" }`
+
+Implementation:
+
+- Helper: `org.medical.error.ApiException`
+- Mappers: `ApiExceptionMapper`, `ValidationExceptionMapper`, `BadRequestExceptionMapper`, `NotFoundExceptionMapper`, `SecurityExceptionMappers`, `AuthzExceptionMappers`
+
 - Entities: `org.medical.model.*`
 - API: `org.medical.resource.*`
-

@@ -10,6 +10,7 @@ import org.medical.model.Doctor;
 import org.medical.model.MedicalRecord;
 import org.medical.model.Patient;
 import io.quarkus.security.identity.SecurityIdentity;
+import org.medical.service.AuditService;
 
 import java.util.List;
 
@@ -20,6 +21,9 @@ public class MedicalRecordResource {
 
     @Inject
     SecurityIdentity identity; // Παίρνει το JWT token του χρήστη
+
+    @Inject
+    AuditService audit;
 
     /**
      * POST /medicalrecords
@@ -33,12 +37,12 @@ public class MedicalRecordResource {
 
         Doctor doctor = Doctor.find("amka", doctorAmka).firstResult();
         if (doctor == null) {
-            return Response.status(Response.Status.UNAUTHORIZED).entity("Doctor not found").build();
+            throw org.medical.error.ApiException.unauthorized("Doctor not found");
         }
 
         Patient patient = Patient.find("amka", dto.patientAmka).firstResult();
         if (patient == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Patient not found").build();
+            throw org.medical.error.ApiException.notFound("Patient not found");
         }
 
         MedicalRecord record = new MedicalRecord();
@@ -59,7 +63,8 @@ public class MedicalRecordResource {
         record.createdAt = java.time.LocalDateTime.now();
         record.updatedAt = record.createdAt;
         record.persist();
-
+        // Audit: δημιουργία εγγραφής ιστορικού
+        audit.log("CREATE", patient.amka, record.id);
         return Response.status(Response.Status.CREATED).entity(record).build();
     }
 
@@ -74,10 +79,12 @@ public class MedicalRecordResource {
         List<MedicalRecord> records = MedicalRecord.find("patient.amka", amka).list();
 
         if (records.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("No medical records found for patient with AMKA: " + amka).build();
+            throw org.medical.error.ApiException.notFound("No medical records found for patient with AMKA: " + amka);
         }
-
+        // Audit: ανάγνωση πολλαπλών εγγραφών για ασθενή
+        for (MedicalRecord r : records) {
+            audit.log("READ", amka, r.id);
+        }
         return Response.ok(records).build();
     }
 
@@ -91,8 +98,10 @@ public class MedicalRecordResource {
     public Response getRecordById(@PathParam("id") Long id) {
         MedicalRecord record = MedicalRecord.findById(id);
         if (record == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Record not found").build();
+            throw org.medical.error.ApiException.notFound("Record not found");
         }
+        // Audit: ανάγνωση συγκεκριμένης εγγραφής
+        audit.log("READ", record.patient != null ? record.patient.amka : null, record.id);
         return Response.ok(record).build();
     }
 
@@ -107,12 +116,12 @@ public class MedicalRecordResource {
     public Response updateRecord(@PathParam("id") Long id, @jakarta.validation.Valid CreateMedicalRecordDTO dto) {
         MedicalRecord record = MedicalRecord.findById(id);
         if (record == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Record not found").build();
+            throw org.medical.error.ApiException.notFound("Record not found");
         }
 
         Patient patient = Patient.find("amka", dto.patientAmka).firstResult();
         if (patient == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Patient not found").build();
+            throw org.medical.error.ApiException.notFound("Patient not found");
         }
 
         record.date = dto.date;
@@ -130,6 +139,8 @@ public class MedicalRecordResource {
         record.patient = patient;
 
         record.updatedAt = java.time.LocalDateTime.now();
+        // Audit: ενημέρωση εγγραφής
+        audit.log("UPDATE", patient.amka, record.id);
         return Response.ok(record).build();
     }
 
@@ -144,18 +155,19 @@ public class MedicalRecordResource {
     public Response deleteRecord(@PathParam("id") Long id) {
         MedicalRecord rec = MedicalRecord.findById(id);
         if (rec == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Medical record not found").build();
+            throw org.medical.error.ApiException.notFound("Medical record not found");
         }
         String doctorAmka = identity.getPrincipal().getName();
         String creatorAmka = rec.doctor != null ? rec.doctor.amka : null;
         if (creatorAmka == null || !creatorAmka.equals(doctorAmka)) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity("Only the creating doctor can delete this record").build();
+            throw org.medical.error.ApiException.forbidden("Only the creating doctor can delete this record");
         }
         boolean deleted = MedicalRecord.deleteById(id);
-        return deleted ? Response.noContent().build()
-                : Response.status(Response.Status.NOT_FOUND)
-                    .entity("Medical record not found").build();
+        if (deleted) {
+            // Audit: διαγραφή εγγραφής
+            audit.log("DELETE", rec.patient != null ? rec.patient.amka : null, rec.id);
+            return Response.noContent().build();
+        }
+        throw org.medical.error.ApiException.notFound("Medical record not found");
     }
 }

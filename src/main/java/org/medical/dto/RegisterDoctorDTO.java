@@ -36,6 +36,7 @@ public class RegisterDoctorDTO {
     @NotBlank(message = "medicalAssociation is required")
     public String medicalAssociation;
     @NotBlank(message = "phone is required")
+    @Pattern(regexp = "\\d{10}", message = "phone must be exactly 10 digits")
     public String phone;
     @NotBlank(message = "officeStreet is required")
     public String officeStreet;
